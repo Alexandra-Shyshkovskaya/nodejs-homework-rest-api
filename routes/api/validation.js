@@ -1,6 +1,6 @@
-const express = require('express')
-const router = express.Router()
-
+const express = require("express");
+const router = express.Router();
+// const Contacts = require("../../../model");
 const {
   validateContact,
   validateUpdateContact,
@@ -28,4 +28,4 @@ router.delete("/:contactId", validateId, deleteContact);
 
 router.patch("/:contactId", validateId, validateUpdateContact, patchContact);
 
-module.exports = router
+module.exports = router;
