@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
+const mongoosePaginate = require('mongoose-paginate-v2');
+const { Schema, SchemaTypes, model } = mongoose;
 
 const contactSchema = new Schema(
   {
@@ -14,17 +15,37 @@ const contactSchema = new Schema(
     },
     phone: {
       type: String,
+      required: [true, "User phone number required"],
       validate: {
         validator: function (v) {
           return /\d{3}-\d{3}-\d{4}/.test(v);
         },
         message: (props) => `${props.value} is not a valid phone number!`,
       },
-      required: [true, "User phone number required"],
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
     },
   },
-  { versionKey: false, timestamps: true }
+  {
+    versionKey: false,
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: function (doc, ret) {
+          delete ret._id
+          return ret
+        },
+      },
+  },
 );
+
+contactSchema.plugin(mongoosePaginate);
 
 const Contact = model("contact", contactSchema);
 
