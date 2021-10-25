@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
+
 const uriDb = process.env.URI_DB;
 
 const db = mongoose.connect(uriDb, {
@@ -27,3 +28,5 @@ process.on("SIGINT", async () => {
     process.exit(1);
   });
 });
+
+module.exports = db;
