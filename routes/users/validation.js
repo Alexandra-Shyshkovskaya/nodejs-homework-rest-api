@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const { Subscription, HttpCode } = require('../helpers/constants');
 
 const schemaAddUser = Joi.object({

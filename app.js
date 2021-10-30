@@ -3,6 +3,8 @@ const logger = require('morgan');
 const cors = require('cors');
 const boolParser = require('express-query-boolean');
 const helmet = require('helmet');
+require("dotenv").config();
+const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
 const { HttpCode } = require('./helpers/constants');
 const contactsRouter = require('./routes/contacts');
 const usersRouter = require('./routes/users');
@@ -10,7 +12,7 @@ const usersRouter = require('./routes/users');
 const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
-
+app.use(express.static(AVATAR_OF_USERS));
 app.use(helmet());
 app.use(logger(formatsLogger));
 app.use(cors());

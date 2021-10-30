@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken');
+const path = require("path");
+const mkdirp = require("mkdirp");
 const Users = require('../repository/users');
 const { HttpCode, Subscription} = require('../helpers/constants');
 require('dotenv').config();
+const UploadService = require('../services/file-upload');
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -25,6 +28,7 @@ const signup = async (req, res, next) => {
                 name: newUser.name,
                 email: newUser.email,
                 subscription: newUser.subscription,
+                avatar: newUser.avatar,
             },
         })
     } catch (error) {
@@ -36,11 +40,11 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await Users.findByEmail(email);
-        const isValidPassword = await user.isValidPassword(password);
+        const isValidPassword = await user?.isValidPassword(password);
         if (!user || !isValidPassword) {
-            return res.status(HttpCode.BAD_REQUEST).json({
+            return res.status(HttpCode.UNAUTHORIZED).json({
                 status: 'Error',
-                code: HttpCode.BAD_REQUEST,
+                code: HttpCode.UNAUTHORIZED,
                 message: 'Email or password is wrong',
             });
         };
@@ -56,11 +60,7 @@ const login = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(HttpCode.UNAUTHORIZED).json({
-            status: 'Error',
-            code: HttpCode.UNAUTHORIZED,
-            message: 'Invalid credentials',
-        });
+        next(error);
     }
 };
 
@@ -110,8 +110,8 @@ const updateSubscription = async (req, res, next) => {
                 data: 'Not found',
             });
         };
-    } catch (e) {
-        next(e);
+    } catch (error) {
+        next(error);
     };
 };
 
@@ -145,6 +145,27 @@ const onlyBusiness = async (_req, res) => {
     });
 };
 
+const uploadAvatar = async (req, res, next) => {
+    const userId = String(req.user._id);
+    const file = req.file;
+    const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
+    const destination = path.join(AVATAR_OF_USERS, userId);
+    await mkdirp(destination);
+    const uploadService = new UploadService(destination);
+    const avatarURL = await uploadService.save(file, userId);
+    await Users.updateAvatar(userId, avatarURL);
+    
+    return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    data: {
+      avatar: avatarURL,
+    },
+  });
+
+    
+};
+
 module.exports = {
     signup,
     login,
@@ -154,4 +175,5 @@ module.exports = {
     onlyStarter,
     onlyPro,
     onlyBusiness,
+    uploadAvatar,
 };
