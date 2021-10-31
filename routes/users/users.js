@@ -7,12 +7,14 @@ const { signup,
     updateSubscription,
     onlyStarter,
     onlyPro,
-    onlyBusiness } = require('../../controllers/users');
+    onlyBusiness,
+    uploadAvatar} = require('../../controllers/users');
 const { validateCreateUser, validateLogin, validateUpdateSubscription } = require('./validation');
 const guard = require('../../helpers/guard');
 const { Subscription } = require('../../helpers/constants');
 const role = require('../../helpers/role');
 const loginLimit = require('../../helpers/rate-limit-login');
+const upload = require('../../helpers/uploads');
 
 router.patch('/', guard, validateUpdateSubscription, updateSubscription);
 
@@ -31,6 +33,8 @@ router.get('/pro', guard, role(Subscription.PRO), onlyPro);
 router.get('/business', guard, role(Subscription.BUSINESS), onlyBusiness);
 
 router.patch('/', guard, updateSubscription);
+
+router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar);
 
 
 module.exports = router;

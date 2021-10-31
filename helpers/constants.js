@@ -18,4 +18,13 @@ const HttpCode = {
     INTERNAL_SERVER_ERROR: 500,
 };
 
-module.exports = { Subscription, HttpCode, };
+const LimitSize = {
+    FIELD_SIZE: 2000000,
+};
+
+const SizeAvatar = {
+    S:'250',
+};
+
+
+module.exports = { Subscription, HttpCode, LimitSize, SizeAvatar };

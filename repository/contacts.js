@@ -34,7 +34,7 @@ const listContacts = async (userId, query) => {
   return { contacts, total, limit, offset, page }
 };
 
-//
+
 const getContactById = async (userId, contactId) => {
   const result = await Contact.findOne({ contactId, userId }).populate({
     path: 'owner',
