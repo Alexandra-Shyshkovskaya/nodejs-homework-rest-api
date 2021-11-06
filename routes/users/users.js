@@ -8,7 +8,9 @@ const { signup,
     onlyStarter,
     onlyPro,
     onlyBusiness,
-    uploadAvatar} = require('../../controllers/users');
+    uploadAvatar,
+    verifyUser,
+    repeatSendEmail,} = require('../../controllers/users');
 const { validateCreateUser, validateLogin, validateUpdateSubscription } = require('./validation');
 const guard = require('../../helpers/guard');
 const { Subscription } = require('../../helpers/constants');
@@ -36,5 +38,8 @@ router.patch('/', guard, updateSubscription);
 
 router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar);
 
+router.get('/verify/:token', verifyUser);
+
+router.post('/verify', repeatSendEmail);
 
 module.exports = router;
